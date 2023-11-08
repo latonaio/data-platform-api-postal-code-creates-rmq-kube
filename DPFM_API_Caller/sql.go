@@ -125,7 +125,7 @@ func (c *DPFMAPICaller) postalCodeAddressCreateSql(
 		input.PostalCode.PostalCodeAddress[i].PostalCode = input.PostalCode.PostalCode
 		postalCodeAddressData := input.PostalCode.PostalCodeAddress[i]
 
-		res, err := c.rmq.SessionKeepRequest(ctx, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": accountingData, "function": "PostalCodePostalCodeAddress", "runtime_session_id": sessionID})
+		res, err := c.rmq.SessionKeepRequest(ctx, c.conf.RMQ.QueueToSQL()[0], map[string]interface{}{"message": postalCodeAddressData, "function": "PostalCodePostalCodeAddress", "runtime_session_id": sessionID})
 		if err != nil {
 			err = xerrors.Errorf("rmq error: %w", err)
 			return nil
@@ -235,15 +235,12 @@ func (c *DPFMAPICaller) postalCodeAddressUpdateSql(
 }
 
 func postalCodeIsUpdate(postalCode *dpfm_api_processing_formatter.PostalCodeUpdates) bool {
-	postalCode := postalCode.PostalCode
-	country := postalCode.Country
-
-	return !(postalCode == 0 || postalCode == "")
+	// postalCode := postalCode.PostalCode
+	return !(postalCode.PostalCode == "")
 }
 
 func postalCodeAddressIsUpdate(postalCodeAddress *dpfm_api_processing_formatter.PostalCodeAddressUpdates) bool {
 	postalCode := postalCodeAddress.PostalCode
-	country := postalCodeAddress.Country
 
-	return !(postalCode == 0 || postalCode == "")
+	return !(postalCode == "")
 }

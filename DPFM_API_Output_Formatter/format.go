@@ -2,8 +2,8 @@ package dpfm_api_output_formatter
 
 import (
 	dpfm_api_input_reader "data-platform-api-postal-code-creates-rmq-kube/DPFM_API_Input_Reader"
+	dpfm_api_processing_formatter "data-platform-api-postal-code-creates-rmq-kube/DPFM_API_Processing_Formatter"
 	"encoding/json"
-	"time"
 
 	"golang.org/x/xerrors"
 )
@@ -15,23 +15,23 @@ func ConvertToPostalCodeCreates(sdc *dpfm_api_input_reader.SDC) (*PostalCode, er
 	if err != nil {
 		return nil, err
 	}
-	// postalCode.CreationDate = *getSystemDatePtr()
-	// postalCode.CreationTime = *getSystemTimePtr()
-	// postalCode.LastChangeDate = getSystemDatePtr()
-	// postalCode.LastChangeTime = getSystemTimePtr()
 
 	return postalCode, nil
 }
 
-func ConvertToPostalCodeAddressCreates(sdc *dpfm_api_input_reader.SDC) (*PostalCodeAddress, error) {
-	data := sdc.PostalCodeAddress
+func ConvertToPostalCodeAddressCreates(sdc *dpfm_api_input_reader.SDC) (*[]PostalCodeAddress, error) {
+	items := make([]PostalCodeAddress, 0)
 
-	postalCodeAddress, err := TypeConverter[*PostalCodeAddress](data)
-	if err != nil {
-		return nil, err
+	for _, data := range sdc.PostalCode.PostalCodeAddress {
+		PostalCodeAddress, err := TypeConverter[*PostalCodeAddress](data)
+		if err != nil {
+			return nil, err
+		}
+
+		items = append(items, *PostalCodeAddress)
 	}
 
-	return postalCodeAddress, nil
+	return &items, nil
 }
 
 func ConvertToPostalCodeUpdates(postalCodeData dpfm_api_input_reader.PostalCode) (*PostalCode, error) {
@@ -45,15 +45,19 @@ func ConvertToPostalCodeUpdates(postalCodeData dpfm_api_input_reader.PostalCode)
 	return postalCode, nil
 }
 
-func ConvertToPostalCodeAddressUpdates(postalCodeData dpfm_api_input_reader.PostalCodeAddress) (*PostalCodeAddress, error) {
-	data := postalCodeAddressData
+func ConvertToPostalCodeAddressUpdates(postalCodeAddressUpdates *[]dpfm_api_processing_formatter.PostalCodeAddressUpdates) (*[]PostalCodeAddress, error) {
+	items := make([]PostalCodeAddress, 0)
 
-	postalCodeAddress, err := TypeConverter[*PostalCodeAddress](data)
-	if err != nil {
-		return nil, err
+	for _, data := range *postalCodeAddressUpdates {
+		postalCodeAddress, err := TypeConverter[*PostalCodeAddress](data)
+		if err != nil {
+			return nil, err
+		}
+
+		items = append(items, *postalCodeAddress)
 	}
 
-	return postalCodeAddress, nil
+	return &items, nil
 }
 
 func TypeConverter[T any](data interface{}) (T, error) {
@@ -67,22 +71,4 @@ func TypeConverter[T any](data interface{}) (T, error) {
 		return dist, xerrors.Errorf("Unmarshal error: %w", err)
 	}
 	return dist, nil
-}
-
-func getSystemDatePtr() *string {
-	// jst, _ := time.LoadLocation("Asia/Tokyo")
-	// day := time.Now().In(jst)
-
-	day := time.Now()
-	res := day.Format("2006-01-02")
-	return &res
-}
-
-func getSystemTimePtr() *string {
-	// jst, _ := time.LoadLocation("Asia/Tokyo")
-	// day := time.Now().In(jst)
-
-	day := time.Now()
-	res := day.Format("15:04:05")
-	return &res
 }

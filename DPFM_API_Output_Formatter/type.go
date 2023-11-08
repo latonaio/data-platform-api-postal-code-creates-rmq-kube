@@ -25,7 +25,7 @@ type SDC struct {
 }
 
 type Message struct {
-	PostalCode        *[]PostalCode        `json:"PostalCode"`
+	PostalCode        *PostalCode          `json:"PostalCode"`
 	PostalCodeAddress *[]PostalCodeAddress `json:"PostalCodeAddress"`
 }
 

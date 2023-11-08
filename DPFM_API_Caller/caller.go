@@ -5,7 +5,8 @@ import (
 	dpfm_api_input_reader "data-platform-api-postal-code-creates-rmq-kube/DPFM_API_Input_Reader"
 	dpfm_api_output_formatter "data-platform-api-postal-code-creates-rmq-kube/DPFM_API_Output_Formatter"
 	"data-platform-api-postal-code-creates-rmq-kube/config"
-	"data-platform-api-postal-code-creates-rmq-kube/existence_conf"
+
+	//"data-platform-api-postal-code-creates-rmq-kube/existence_conf"
 	"sync"
 	"time"
 
@@ -19,19 +20,19 @@ type DPFMAPICaller struct {
 	conf *config.Conf
 	rmq  *rabbitmq.RabbitmqClient
 
-	configure *existence_conf.ExistenceConf
+	// configure *existence_conf.ExistenceConf
 }
 
 func NewDPFMAPICaller(
 	conf *config.Conf, rmq *rabbitmq.RabbitmqClient,
 
-	confirmor *existence_conf.ExistenceConf,
+	// confirmor *existence_conf.ExistenceConf,
 ) *DPFMAPICaller {
 	return &DPFMAPICaller{
-		ctx:       context.Background(),
-		conf:      conf,
-		rmq:       rmq,
-		configure: confirmor,
+		ctx:  context.Background(),
+		conf: conf,
+		rmq:  rmq,
+		//		configure: confirmor,
 	}
 }
 
@@ -90,7 +91,7 @@ func (c *DPFMAPICaller) exconfProcess(
 ) {
 	defer wg.Done()
 	var e []error
-	*exconfAllExist, e = c.configure.Conf(input, output, accepter, log)
+	//	*exconfAllExist, e = c.configure.Conf(input, output, accepter, log)
 	if len(e) != 0 {
 		mtx.Lock()
 		*errs = append(*errs, e...)
@@ -143,3 +144,5 @@ func contains(slice []string, target string) bool {
 	}
 	return false
 }
+
+//existence_conf関連コメントアウト済み
