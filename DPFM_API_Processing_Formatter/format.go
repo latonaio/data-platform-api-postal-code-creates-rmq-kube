@@ -8,7 +8,11 @@ func ConvertToPostalCodeUpdates(postalCode dpfm_api_input_reader.PostalCode) *Po
 	data := postalCode
 
 	return &PostalCodeUpdates{
-		PostalCode: *data.PostalCode,
+		PostalCode:     *data.PostalCode,
+		Country:        *data.Country,
+		LocalSubRegion: *data.LocalSubRegion,
+		LocalRegion:    *data.LocalRegion,
+		GlobalRegion:   *data.GlobalRegion,
 	}
 }
 
@@ -20,5 +24,9 @@ func ConvertToPostalCodeAddressUpdates(postalCode dpfm_api_input_reader.PostalCo
 		PostalCode:                  *data.PostalCode,
 		Country:                     *data.Country,
 		PostalCodeAddressDetailText: data.PostalCodeAddressDetailText,
+		CityName:                    data.CityName,
+		Building:                    data.Building,
+		Floor:                       data.Floor,
+		PostalCodeAddressTotalText:  data.PostalCodeAddressTotalText,
 	}
 }
